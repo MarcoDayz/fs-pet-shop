@@ -1,7 +1,8 @@
-const express = require('express');
-const app = express();
-const fs = require('fs');
-const PORT = 3000;
+const express = require('express'); //import node js express
+const app = express();//optional; assign express a var
+const fs = require('fs');//import node js file system
+const PORT = 3000;//assign a port num
+
 //GET ALL
 app.get('/pets', function(req,res){
     fs.readFile('pets.json', 'utf-8', function(err, data){
@@ -20,19 +21,23 @@ app.get('/pets/:id', function(req,res){
         if(urlIndex >= petDataLength || urlIndex < 0){
             res.status(404);
             res.contentType('text/plain');
-            res.send('You are trying to acces outside of range')
+            res.send('Not Found')
         }else{
             res.status(200)
             res.contentType('application/json')
             res.send(JSON.stringify(petData[urlIndex]))
         }
     })  
-})
+});
+
+app.put('/pets/:id', function(req,res){
+    res.send(req.query.id)
+});
 
 // CREATE
 app.post('/pets', function(req,res){
 
-    const age = req.query.age;
+    const age = Number(req.query.age);
     const kind = req.query.kind;
     const name = req.query.name;
 
@@ -40,14 +45,13 @@ app.post('/pets', function(req,res){
         res.status(400)
         res.contentType('text/plain')
         res.send('Bad Request')
-    }
+    };
 
     fs.readFile('pets.json', 'utf-8', function(err, data){
         if(err){
             res.send('Error readind pet data');
         }
         const petData = JSON.parse(data);
-
         const newPet = {"age": age, "kind": kind, "name": name};
         petData.push(newPet);
         
@@ -61,10 +65,16 @@ app.post('/pets', function(req,res){
                 res.send('Error writing pet data');
             }
         })
-    })
+    })    
+});
 
-    
+app.get('/*' , function(req,res){
+    res.status(404);
+    res.contentType('text/plain');
+    res.send('Not Found');
+
 })
+
 
 app.listen(PORT, function(){
     console.log(`listening on port: ${PORT}`)
