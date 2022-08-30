@@ -1,7 +1,5 @@
-import { kMaxLength } from "buffer";
 import express from "express";
 import fs from 'fs';
-import { url } from "inspector";
 const app = express();
 const port = 4000;
 
@@ -65,7 +63,7 @@ app.patch('/pets/:id', (req,res) => {
     const dataIndex = data[urlID];
 
     if(req.body.age){
-    dataIndex['age'] = req.body.age;
+    dataIndex['age'] = Number(req.body.age);
     fs.writeFileSync('pets.json', (JSON.stringify(data)));
     res.json(data);
     }
